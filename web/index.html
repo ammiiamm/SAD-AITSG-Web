@@ -1,0 +1,118 @@
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>Login Form</title>
+        <link href="assets/css/style.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $(".username").focus(function () {
+                    $(".user-icon").css("left", "-48px");
+                });
+                $(".username").blur(function () {
+                    $(".user-icon").css("left", "0px");
+                });
+
+                $(".password").focus(function () {
+                    $(".pass-icon").css("left", "-48px");
+                });
+                $(".password").blur(function () {
+                    $(".pass-icon").css("left", "0px");
+                });
+            });
+        </script>
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+<script type="text/javascript" >
+  // Initialize Firebase
+var config = {
+    apiKey: "AIzaSyDVu7kqw9ht5RfO8okNfeneLg7nNH-8W0k",
+    authDomain: "sad-ait-sg.firebaseapp.com",
+    databaseURL: "https://sad-ait-sg.firebaseio.com",
+    projectId: "sad-ait-sg",
+    storageBucket: "sad-ait-sg.appspot.com",
+    messagingSenderId: "189984423113"
+  };
+  firebase.initializeApp(config);
+  const messaging = firebase.messaging();
+  messaging.requestPermission()
+  .then(function ()
+        {
+      console.log("Notification permission granted.");
+      return messaging.getToken();
+  })
+      .then(function(token) {
+    if (currentToken) {
+      sendTokenToServer(currentToken);
+      updateUIForPushEnabled(currentToken);
+      console.log(token);
+      $("#token").val(token);
+    }else {
+      // Show permission request.
+      console.log('No Instance ID token available. Request permission to generate one.');
+      // Show permission UI.
+      updateUIForPushPermissionRequired();
+      setTokenSentToServer(false);
+    })
+      .catch(function (err) {
+      console.log('Unable to get permission to notify.', err) })
+      messaging.onMessage(function(payload ) {
+      console.log("onMessaging",payload);
+    });});
+        </script>
+
+    </head>
+    <body>
+ <div id="wrapper">
+        <div class="user-icon"></div>
+        <div class="pass-icon"></div>
+        <form name="login-form" class="login-form">
+            <div class="header">
+                <h1>Login system</h1>
+                <span>Fill out the form below to login</span>
+            </div>
+            <div class="content">
+                <input name="username" type="text"  id="userName"class="input username" value="Username" onfocus="this.value=''"/>
+                <input name="password" type="password" id="passWord" class="input password" value="Password" onfocus="this.value=''"/>
+                <input name="token" type="text" id="token" />
+            </div>
+            <div class="footer">
+                <input type="button"  id="logins" value="Login" class="button"/>
+                <input type="submit" name="submit" value="Register" class="register"/>
+            </div>
+        </form>
+    </div>
+
+    <div class="gradient"></div>
+    <script type="text/javascript">
+
+        $("#logins").click(function(){
+             var token = $("#token").val();
+             var username = $("#userName").val();
+             //var password = $("#passWord").val();
+             var password = "test";
+           // alert("ffffffffffffffffffffffff");
+            // window.location.href="incident.html";
+            console.log("onMessaging",username);
+            console.log("onMessaging",password);
+          $.ajax({
+                type: "POST",
+                contentType:"application/json",
+                url:"https://aitsgapi.mrteera.com/"+token,
+                 crossOrigin: true,
+                data:"{username:"+username+",password:"+password+"}",
+                dataType:'json',
+                success:function(result)
+                {
+                  $("#token").val(token);
+　                 $.cookie("token", token, { expires: 10 });
+                }
+            });
+
+        });
+
+    </script>
+    </body>
+    </html>
