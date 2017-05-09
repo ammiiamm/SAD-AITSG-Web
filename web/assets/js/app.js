@@ -39,7 +39,7 @@
 	  if(payload.data.status == "authenticated")
 	  {  	
 		sessionStorage.status = true;
-	   	location.href="home.html";
+	   	location.href="incidents.html";
 	  }
    
   });
