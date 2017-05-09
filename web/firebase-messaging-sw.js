@@ -1,19 +1,24 @@
-importScripts('https://www.gstatic.com/firebasejs/3.5.0/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/3.5.0/firebase-messaging.js');
-  // Initialize Firebase
-var config = {
-    apiKey: "AIzaSyDVu7kqw9ht5RfO8okNfeneLg7nNH-8W0k",
-    authDomain: "sad-ait-sg.firebaseapp.com",
-    databaseURL: "https://sad-ait-sg.firebaseio.com",
-    projectId: "sad-ait-sg",
-    storageBucket: "sad-ait-sg.appspot.com",
-    messagingSenderId: "189984423113"
-  };
-  firebase.initializeApp(config);
-const messaging = firebase.messaging();
-messaging.onMessage(function(payload) {
-  console.log("Message received. ", payload);
+importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js');
+
+// Initialize the Firebase app in the service worker by passing in the
+// messagingSenderId.
+firebase.initializeApp({
+  'messagingSenderId': '189984423113'
 });
 
+// Retrieve an instance of Firebase Messaging so that it can handle background
+// messages.
+const messaging = firebase.messaging();
+	messaging.setBackgroundMessageHandler(function(payload) {
+    console.log('[firebase-messaging-sw.js] Received background message ', payload);
+    // Customize notification here
+    const notificationTitle = 'Background Message Title';
+    const notificationOptions = {
+        body: 'Background Message body.'
+    };
 
+    return self.registration.showNotification(notificationTitle,
+        notificationOptions);
+});
 
