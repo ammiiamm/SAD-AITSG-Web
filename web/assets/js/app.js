@@ -36,9 +36,11 @@ console.log("sessionStorage.status: "+sessionStorage.status);
   //   `messaging.setBackgroundMessageHandler` handler.
   messaging.onMessage(function(payload) {
       console.log("Message received. ", payload);
+	  console.log(payload.data.access_token);
 	  console.log(payload.data.status);
 	  if(payload.data.status == "authenticated")
-	  {  	
+	  { 
+		sessionStorage.access_token = payload.data.access_token;  
 		sessionStorage.status = 1;
 	   	location.href="incidents.html";
 	  }
