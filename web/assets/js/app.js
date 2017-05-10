@@ -46,7 +46,11 @@ const messaging = firebase.messaging();
 	   	location.href="incidents.html";
 	  }
 	  else
-		 sessionStorage.status = 0;
+	  {
+		  sessionStorage.status = 0;
+		  $('#loginMessage').show();
+		  $('#loginMessage').html("Invalid User");
+	  }
    
   });
 

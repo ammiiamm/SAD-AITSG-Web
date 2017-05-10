@@ -50,6 +50,7 @@
                
             </div>
             <div class="footer">
+				<div id="loginMessage"></div>
                 <input type="button" id="logins" value="Login" class="button" />
             </div>
         </form>
@@ -62,6 +63,12 @@
             var token = myToken;//$("#token").val();
             var username = $("#userNane").val();
             var password = $("#passWord").val();
+			if(username == '' || password == '')
+			{
+				$('#loginMessage').show();
+				$('#loginMessage').html("Please fill in the form");
+				return;
+			}
 			sessionStorage.currentUser = username;
 			var data={
 				"username":username,
@@ -69,6 +76,7 @@
 				"device-token":myToken
 			};
             //window.location.href = "incident.html";
+			$('#loginMessage').show();
             $.ajax({
                 type: "POST",
                 url: "https://aitsgapi.mrteera.com/token",

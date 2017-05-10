@@ -1,6 +1,15 @@
 
 
 @import url(https://fonts.googleapis.com/css?family=Bree+Serif);
+#loginMessage
+{
+	float:left;
+	display:none;
+	padding-top: 15px;
+	color: crimson;
+	padding-left: 5px;
+	font-size: 13px;
+}
 
 ::selection {
 	color: #fff;
