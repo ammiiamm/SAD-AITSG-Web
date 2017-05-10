@@ -223,7 +223,7 @@
 
         request.open('GET', 'https://aitsgapi.mrteera.com/incidents/'+id);
 
-        request.setRequestHeader('Authorization', 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNvbWNoYWlAbXljb21wYW55LmNvbSJ9.9su4Bn9OJw-uL1d1Bmuk2kvBT8sTV9WtsRXksDoURuU');
+        request.setRequestHeader('Authorization', 'JWT '+sessionStorage.access_token);
 
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
@@ -251,7 +251,7 @@
             "ajax": {
                 "url": "https://aitsgapi.mrteera.com/incidents",
                 'beforeSend': function (request) {
-                    request.setRequestHeader("Authorization", 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNvbWNoYWlAbXljb21wYW55LmNvbSJ9.9su4Bn9OJw-uL1d1Bmuk2kvBT8sTV9WtsRXksDoURuU');
+                    request.setRequestHeader("Authorization", 'JWT '+sessionStorage.access_token);
                 },
                 "dataSrc": function (json) {
                     var return_data = new Array();
