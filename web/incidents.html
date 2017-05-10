@@ -85,17 +85,6 @@
     <div class="row">
 
         <table id="myTable" class="table table-striped table-bordered">
-            <thead>
-            <tr class="header">
-                <th style="width:5%;">No.</th>
-                <th style="width:40%;">Incident</th>
-                <th style="width:10%;">Status</th>
-                <th style="width:10%;">Created at</th>
-                <th style="width:10%;">User name</th>
-                <th style="width:10%;">Action</th>
-            </tr>
-            </thead>
-
         </table>
 
     </div>
@@ -157,7 +146,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="assignSecurityGuard()">Save changes</button>
+                <button type="button" class="btn btn-primary" onclick="assignSecurityGuard()" data-dismiss="modal">Save changes</button>
             </div>
         </div>
     </div>
@@ -201,6 +190,7 @@
 				},
                 success: function(result) {
                     console.log(result);
+					table.ajax.url( 'https://aitsgapi.mrteera.com/incidents' ).load();
                 }
          });		
 		
@@ -264,8 +254,24 @@
     }
     var table;
     $(document).ready(function () {
-        var monthShortNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        table = $('#myTable').DataTable({
+       
+		loadIncidents();
+
+    });	
+	function loadIncidents()
+	{
+		 var monthShortNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		$('#myTable').html("");
+		$('#myTable').html('<thead>'+
+            '<tr class="header">'+
+                '<th style="width:5%;">No.</th>'+
+                '<th style="width:40%;">Incident</th>'+
+                '<th style="width:10%;">Status</th>'+
+                '<th style="width:10%;">Created at</th>'+
+                '<th style="width:10%;">User name</th>'+
+                '<th style="width:10%;">Action</th>'+
+            '</tr>');
+		 table = $('#myTable').DataTable({
             "processing": true,
             "ajax": {
                 "url": "https://aitsgapi.mrteera.com/incidents",
@@ -308,8 +314,7 @@
                 "data": "button"
             }]
         });
-
-    });
+	}
     function OpenList() {
         table.columns(2).search('open').draw();
     }
