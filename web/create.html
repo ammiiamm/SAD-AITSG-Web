@@ -73,8 +73,14 @@
                     alert("Please fill in Detail");
                     return false;
                 }
-            var latitude = latMap;
-            var longtitude = lngMap;
+            if (typeof(latMap) == "undefined"){
+                var latitude = 14.080627;
+                var longtitude = 100.6103773;
+            }else{
+                var latitude = latMap;
+                var longtitude = lngMap;
+            }
+
             //var created_by = "1";
             //var updated_by = created_by;
             var created_at = new Date();
@@ -100,7 +106,7 @@
                 //'created_at': created_at
 
             };
-            alert(body);
+
             request.send(JSON.stringify(body));
 
         }
