@@ -39,7 +39,7 @@
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
-        <div class="navbar-header collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <div class="navbar-header collapse navbar-collapse">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
@@ -48,6 +48,8 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="incidents.html">AIT Security Guard Manager</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li class="dropdown">
                     <a href="incidents.html" class="dropdown-toggle" data-toggle="dropdown" role="button"
@@ -62,7 +64,7 @@
                 <li><a href="create.html">New Incident</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li>Welcome, DUMMY USER!</li>
+                <li><a class="navbar-brand" href="#">LOG OUT</a></li>
             </ul>
 
         </div>
@@ -224,7 +226,7 @@
     function eachIncident(id) {
         var request = new XMLHttpRequest();
 
-        request.open('GET', 'https://aitsgapi.mrteera.com/incidents/'+id);
+        request.open('GET', 'https://private-anon-6f95296b85-aitsg.apiary-mock.com/incidents/'+id);
 
         request.setRequestHeader('Authorization', 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNvbWNoYWlAbXljb21wYW55LmNvbSJ9.9su4Bn9OJw-uL1d1Bmuk2kvBT8sTV9WtsRXksDoURuU');
 
