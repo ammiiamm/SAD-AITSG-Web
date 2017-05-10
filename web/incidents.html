@@ -229,7 +229,7 @@
 <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
 <!--add a marker for showing incident-->
 <script type="text/javascript">
-    var map;
+//    var map;
     var latitude = 14.080627; //default
     var longitude = 100.6103773; //default
     var currentIncident;
@@ -344,7 +344,9 @@
                 $('#myModalView .modal-body #view_picture').attr("src", data.image_url);
                 latitude = parseFloat(data.latitude);
                 longitude = parseFloat(data.longitude);
-                initMapView()
+                $('#myModalView').on('shown.bs.modal', function () {
+                    initMapView();
+                });
             }
         };
         request.send();
@@ -371,7 +373,9 @@
                 $('#myModal .modal-body #picture').attr("src", data.image_url);
                 latitude = parseFloat(data.latitude);
                 longitude = parseFloat(data.longitude);
-                initMap();
+                $('#myModal').on('shown.bs.modal', function () {
+                    initMap();
+                });
             }
         };
         request.send();
