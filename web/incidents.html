@@ -114,7 +114,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
-                <h2 class="modal-title" id="myModalLabel">...</h2>
+                <h2 class="modal-title" id="myModalLabel"></h2>
             </div>
 
             <div class="modal-body">
@@ -127,16 +127,16 @@
                     <tbody>
                     <tr>
                         <td style="width: 20%"><label>Incident: </label></td>
-                        <td id="incident_title">...</td>
+                        <td id="incident_title"></td>
                     </tr>
                     <tr>
                         <td><label>Created by: </label></td>
-                        <td id="createBy">...</td>
+                        <td id="createBy"></td>
                     </tr>
                     <tr>
                         <td><label>Detail: </label></td>
                         <td id="detail">
-                            ...
+
                         </td>
                     </tr>
                     <tr>
@@ -154,12 +154,6 @@
                     <tr>
                         <td colspan="2"><label>Location: </label>
                             <div id="map" style="height: 300px"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <img width="100%"
-                                 src="http://ichef.bbci.co.uk/naturelibrary/images/ic/credit/640x395/s/sn/snake/snake_1.jpg">
                         </td>
                     </tr>
                     </tbody>
@@ -221,13 +215,13 @@
         });
     }
 
-    $('#myModal').on('shown.bs.modal', function () {
-        initMap();
-    });
+//    $('#myModal').on('shown.bs.modal', function () {
+//        initMap();
+//    });
     function eachIncident(id) {
         var request = new XMLHttpRequest();
 
-        request.open('GET', 'https://private-anon-6f95296b85-aitsg.apiary-mock.com/incidents/'+id);
+        request.open('GET', 'https://aitsgapi.mrteera.com/incidents/'+id);
 
         request.setRequestHeader('Authorization', 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNvbWNoYWlAbXljb21wYW55LmNvbSJ9.9su4Bn9OJw-uL1d1Bmuk2kvBT8sTV9WtsRXksDoURuU');
 
@@ -237,14 +231,17 @@
                 console.log('Headers:', this.getAllResponseHeaders());
                 console.log('Body:', this.responseText);
                 var data = JSON.parse(request.responseText);
-                document.getElementById("myModalLabel").innerText = "No. " + data.id;
+                $('#myModal .modal-title').text("No. " + data.id);
+                $('#myModal .modal-body #incident_title').text(data.title);
+                $('#myModal .modal-body #createBy').text(data.createdBy.username);
+                $('#myModal .modal-body #detail').text(data.detail);
+                latitude = parseFloat(data.latitude);
+                longitude = parseFloat(data.longitude);
+                initMap();
             }
         };
 
         request.send();
-
-//        latitude = lat;
-//        longitude = lng;
     }
     var table;
     $(document).ready(function () {
@@ -252,7 +249,7 @@
         table = $('#myTable').DataTable({
             "processing": true,
             "ajax": {
-                "url": "https://private-anon-6f95296b85-aitsg.apiary-mock.com/incidents",
+                "url": "https://aitsgapi.mrteera.com/incidents",
                 'beforeSend': function (request) {
                     request.setRequestHeader("Authorization", 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNvbWNoYWlAbXljb21wYW55LmNvbSJ9.9su4Bn9OJw-uL1d1Bmuk2kvBT8sTV9WtsRXksDoURuU');
                 },
@@ -260,8 +257,6 @@
                     var return_data = new Array();
                     for (var i = 0; i < json.length; i++) {
                         var date = new Date(json[i].createdAt);
-//                        var lat = parseFloat(json[i].latitude);
-//                        var lng = parseFloat(json[i].longitude);
                         if (json[i].status == 'open') {
                             var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" onclick="eachIncident('+ json[i].id + ')">Assign</button>'
                         }
