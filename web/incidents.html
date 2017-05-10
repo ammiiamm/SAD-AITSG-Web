@@ -157,7 +157,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary" onclick="assignSecurityGuard()">Save changes</button>
             </div>
         </div>
     </div>
@@ -181,7 +181,31 @@
     var map;
     var latitude = 14.080627; //default
     var longitude = 100.6103773; //default
-
+	var currentIncident;
+	
+	function assignSecurityGuard()
+	{
+		var guardId = $("#guard").val();
+		var data = {
+				"status":"in progress",
+				"assignee_id":guardId				
+			};
+        $.ajax({
+                type: "PUT",
+                url: "https://aitsgapi.mrteera.com/incidents/" + currentIncident,
+                data: data,
+                dataType: 'json',   
+				beforeSend: function (xhr) {
+					/* Authorization header */
+					xhr.setRequestHeader("Authorization",'JWT '+sessionStorage.access_token);			
+				},
+                success: function(result) {
+                    console.log(result);
+                }
+         });		
+		
+	}
+    
     function initMap() {
         var incident_location = {lat: latitude, lng: longitude};
         var map = new google.maps.Map(document.getElementById('map'), {
@@ -214,6 +238,7 @@
 //        initMap();
 //    });
     function eachIncident(id) {
+		currentIncident = id;
         var request = new XMLHttpRequest();
 
         request.open('GET', 'https://aitsgapi.mrteera.com/incidents/'+id);
@@ -307,8 +332,8 @@
             console.log('Headers:', this.getAllResponseHeaders());
             console.log('Body:', this.responseText);
             var data = JSON.parse(xhr.responseText);
-            for (var i=0;i<data.length;i++){
-                $('#guard').append($('<option>').text(data[i].name).attr('value', data[i].id));
+            for (var i=0;i<data.length;i++){             
+				$('#guard').append($('<option>').text(data[i].name+'('+data[i].username+')').attr('value', data[i].id));
             }
         }
     };
