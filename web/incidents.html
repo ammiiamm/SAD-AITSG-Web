@@ -20,6 +20,7 @@
 
     <!-- Custom styles for this template -->
     <link href="css/jumbotron.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/font-awesome.css">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]>
@@ -31,7 +32,7 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <!--<script src="assets/js/sessionCheck.js"></script>-->
+    <script src="assets/js/sessionCheck.js"></script>
 
 </head>
 
@@ -95,7 +96,61 @@
     </footer>
 </div> <!-- /container -->
 
-<!-- Modal -->
+<!-- Modal for viewing-->
+<div class="modal fade" id="myModalView" tabindex="-1" role="dialog" aria-labelledby="myModalViewLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h2 class="modal-title" id="myModalViewLabel">Loading...</h2>
+            </div>
+
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th colspan="2">Information</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="width: 20%"><label>Incident: </label></td>
+                        <td id="view_title"></td>
+                    </tr>
+                    <tr>
+                        <td><label>Created by: </label></td>
+                        <td id="view_createBy"></td>
+                    </tr>
+                    <tr>
+                        <td><label>Detail: </label></td>
+                        <td id="view_detail">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label>Assign to:</label></td>
+                        <td id="assignee">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><label>Location: </label>
+                            <div id="view_map" style="height: 300px"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <img id="view_picture" src="" alt="" width="100%">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for assign-->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -140,6 +195,11 @@
                             <div id="map" style="height: 300px"></div>
                         </td>
                     </tr>
+                    <tr>
+                        <td colspan="2">
+                            <img id="picture" src="" alt="" width="100%">
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -181,7 +241,7 @@
 			};
         $.ajax({
                 type: "PUT",
-                url: "https://aitsgapi.mrteera.com/incidents/" + currentIncident,
+                url: "hhttps://aitsgapi.mrteera.com/incidents/" + currentIncident,
                 data: data,
                 dataType: 'json',   
 				beforeSend: function (xhr) {
@@ -195,7 +255,35 @@
          });		
 		
 	}
-    
+
+    function initMapView() {
+        var incident_location = {lat: latitude, lng: longitude};
+        var map = new google.maps.Map(document.getElementById('view_map'), {
+            zoom: 15,
+            center: incident_location
+        });
+
+        var marker = new google.maps.Marker({
+            position: incident_location,
+            map: map,
+            title: latitude + ', ' + longitude
+        });
+
+        var contentString = '<div id="content">' +
+            '<div id="siteNotice">' +
+            'Incident Here!' +
+            '</div>' +
+            '</div>';
+
+        var infowindow = new google.maps.InfoWindow({
+            content: contentString
+        });
+
+        marker.addListener('click', function () {
+            infowindow.open(map, marker);
+        });
+    }
+
     function initMap() {
         var incident_location = {lat: latitude, lng: longitude};
         var map = new google.maps.Map(document.getElementById('map'), {
@@ -227,6 +315,34 @@
 //    $('#myModal').on('shown.bs.modal', function () {
 //        initMap();
 //    });
+
+    function viewIncident(id) {
+        var request = new XMLHttpRequest();
+        request.open('GET', 'https://aitsgapi.mrteera.com/incidents/'+id);
+        request.setRequestHeader('Authorization', 'JWT '+sessionStorage.access_token);
+        request.onreadystatechange = function () {
+            if (this.readyState === 4) {
+                var data = JSON.parse(request.responseText);
+                if (data.assignee == null){
+                    var assigning = '';
+                }
+                else {
+                    var assigning = data.assignee.username;
+                }
+                $('#myModalView .modal-title').text("No. " + data.id);
+                $('#myModalView .modal-body #view_title').text(data.title);
+                $('#myModalView .modal-body #view_createBy').text(data.createdBy.username);
+                $('#myModalView .modal-body #assignee').text(assigning);
+                $('#myModalView .modal-body #view_detail').text(data.detail);
+                $('#myModalView .modal-body #view_picture').attr("src",data.image_url);
+                latitude = parseFloat(data.latitude);
+                longitude = parseFloat(data.longitude);
+                initMapView()
+            }
+        };
+        request.send();
+    }
+
     function eachIncident(id) {
 		currentIncident = id;
         var request = new XMLHttpRequest();
@@ -237,14 +353,15 @@
 
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
-                console.log('Status:', this.status);
-                console.log('Headers:', this.getAllResponseHeaders());
-                console.log('Body:', this.responseText);
+//                console.log('Status:', this.status);
+//                console.log('Headers:', this.getAllResponseHeaders());
+//                console.log('Body:', this.responseText);
                 var data = JSON.parse(request.responseText);
                 $('#myModal .modal-title').text("No. " + data.id);
                 $('#myModal .modal-body #incident_title').text(data.title);
                 $('#myModal .modal-body #createBy').text(data.createdBy.username);
                 $('#myModal .modal-body #detail').text(data.detail);
+                $('#myModal .modal-body #picture').attr("src",data.image_url);
                 latitude = parseFloat(data.latitude);
                 longitude = parseFloat(data.longitude);
                 initMap();
@@ -264,12 +381,13 @@
 		$('#myTable').html("");
 		$('#myTable').html('<thead>'+
             '<tr class="header">'+
-                '<th style="width:5%;">No.</th>'+
-                '<th style="width:40%;">Incident</th>'+
-                '<th style="width:10%;">Status</th>'+
-                '<th style="width:10%;">Created at</th>'+
-                '<th style="width:10%;">User name</th>'+
-                '<th style="width:10%;">Action</th>'+
+                '<th>No.</th>'+
+                '<th>Incident</th>'+
+                '<th>Status</th>'+
+                '<th>Created at</th>'+
+                '<th>Created by</th>'+
+                '<th>Assigned to</th>'+
+                '<th>Action</th>'+
             '</tr>');
 		 table = $('#myTable').DataTable({
             "processing": true,
@@ -283,10 +401,17 @@
                     for (var i = 0; i < json.length; i++) {
                         var date = new Date(json[i].createdAt);
                         if (json[i].status == 'open') {
-                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" onclick="eachIncident('+ json[i].id + ')">Assign</button>'
+                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalView" onclick="viewIncident('+ json[i].id + ')"><i class="fa fa-eye" aria-hidden="true"></i></button> <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" onclick="eachIncident('+ json[i].id + ')"><i class="fa fa-pencil" aria-hidden="true"></i></button>'
                         }
                         else {
-                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" disabled>Assign</button>'
+                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalView" onclick="viewIncident('+ json[i].id + ')"><i class="fa fa-eye" aria-hidden="true"></i></button> <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" disabled><i class="fa fa-pencil" aria-hidden="true"></i>/button>'
+                        }
+
+                        if (json[i].assignee == null){
+                            var assignee = '';
+                        }
+                        else {
+                            var assignee = json[i].assignee.username;
                         }
                         return_data.push({
                             'id': json[i].id,
@@ -294,6 +419,7 @@
                             'status': json[i].status,
                             'createdAt': date.getDate() + ' ' + monthShortNames[date.getMonth() + 1] + ' ' + date.getFullYear(),
                             'createdBy': json[i].createdBy.username,
+                            'assignee': assignee,
                             'button': html_btn
                         })
                     }
@@ -310,6 +436,8 @@
                 "data": "createdAt"
             }, {
                 "data": "createdBy"
+            }, {
+                "data": "assignee"
             }, {
                 "data": "button"
             }]
@@ -333,9 +461,6 @@
     xhr.setRequestHeader('Authorization', 'JWT '+sessionStorage.access_token);
     xhr.onreadystatechange = function () {
         if (this.readyState === 4) {
-            console.log('Status:', this.status);
-            console.log('Headers:', this.getAllResponseHeaders());
-            console.log('Body:', this.responseText);
             var data = JSON.parse(xhr.responseText);
             for (var i=0;i<data.length;i++){             
 				$('#guard').append($('<option>').text(data[i].name+'('+data[i].username+')').attr('value', data[i].id));
