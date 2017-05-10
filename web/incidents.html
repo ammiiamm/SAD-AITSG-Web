@@ -243,7 +243,7 @@
             };
             $.ajax({
                 type: "PUT",
-                url: "https://https://aitsgapi.mrteera.com/incidents/" + currentIncident,
+                url: "https://aitsgapi.mrteera.com/incidents/" + currentIncident,
                 data: data,
                 dataType: 'json',
                 beforeSend: function (xhr) {
@@ -376,6 +376,39 @@
         };
         request.send();
     }
+
+    function closeIncident(id) {
+
+
+
+        if (confirm('Are you sure you want to save this thing into the database?')) {
+            currentIncident = id;
+
+            var guardId = $("#guard").val();
+
+            var data = {
+                "status": "closed",
+                "assignee_id": guardId
+            };
+            $.ajax({
+                type: "PUT",
+                url: "https://aitsgapi.mrteera.com/incidents/" + currentIncident,
+                data: data,
+                dataType: 'json',
+                beforeSend: function (xhr) {
+                    /* Authorization header */
+                    xhr.setRequestHeader("Authorization", 'JWT ' + sessionStorage.access_token);
+                },
+                success: function (result) {
+                    table.ajax.url('https://aitsgapi.mrteera.com/incidents').load();
+                }
+            });
+        } else {
+            // Do nothing!
+        }
+
+    }
+
     var table;
     $(document).ready(function () {
 		$('#currentUser').html(sessionStorage.currentUser);
@@ -407,10 +440,10 @@
                     for (var i = 0; i < json.length; i++) {
                         var date = new Date(json[i].createdAt);
                         if (json[i].status == 'closed') {
-                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalView" onclick="viewIncident(' + json[i].id + ')"><i class="fa fa-eye" aria-hidden="true"></i></button> <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" disabled><i class="fa fa-pencil" aria-hidden="true"></i></button>'
+                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalView" onclick="viewIncident(' + json[i].id + ')"><i class="fa fa-eye" aria-hidden="true"></i></button> <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" disabled><i class="fa fa-pencil" aria-hidden="true"></i></button>  <button type="button" class="btn btn-danger btn-md" data-toggle="modal" data-target="#myModal" disabled><i class="fa fa-times" aria-hidden="true"></i></button>'
                         }
                         else {
-                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalView" onclick="viewIncident(' + json[i].id + ')"><i class="fa fa-eye" aria-hidden="true"></i></button> <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" onclick="eachIncident(' + json[i].id + ')"><i class="fa fa-pencil" aria-hidden="true"></i></button>'
+                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalView" onclick="viewIncident(' + json[i].id + ')"><i class="fa fa-eye" aria-hidden="true"></i></button> <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" onclick="eachIncident(' + json[i].id + ')"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button type="button" class="btn btn-danger btn-md"  onclick="closeIncident(' + json[i].id + ')"><i class="fa fa-times" aria-hidden="true"></i></button>'
                         }
 
                         if (json[i].assignee == null) {
@@ -447,7 +480,8 @@
             }, {
                 "data": "button"
             }]
-        });
+        }).search('open'|'in progress').draw();
+        //table.columns(2).search('^(?=.*?(open|open)).*?').draw();
     }
     function OpenList() {
         table.columns(2).search('open').draw();
