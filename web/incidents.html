@@ -31,7 +31,7 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <script src="assets/js/sessionCheck.js"></script>
+    <!--<script src="assets/js/sessionCheck.js"></script>-->
 
 </head>
 
@@ -235,12 +235,12 @@
             "ajax": {
                 "url": "https://private-anon-6f95296b85-aitsg.apiary-mock.com/incidents",
                 'beforeSend': function (request) {
-                    request.setRequestHeader("Authorization", 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MX0.kHZQ03yhLOPC1c7f6CdItQbT2ljvMQLbucdJVkqwEKs');
+                    request.setRequestHeader("Authorization", 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNvbWNoYWlAbXljb21wYW55LmNvbSJ9.9su4Bn9OJw-uL1d1Bmuk2kvBT8sTV9WtsRXksDoURuU');
                 },
                 "dataSrc": function (json) {
                     var return_data = new Array();
                     for (var i = 0; i < json.length; i++) {
-                        var date = new Date(json[i].created_at);
+                        var date = new Date(json[i].createdAt);
                         if (json[i].status == 'open') {
                             var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" onclick="eachIncident('+ json[i].id + ', ' + parseFloat(json[i].latitude) + ', ' + parseFloat(json[i].longitude) + ')">Assign</button>'
                         }
@@ -251,8 +251,8 @@
                             'id': json[i].id,
                             'title': json[i].title,
                             'status': json[i].status,
-                            'created_at': date.getDate() + ' ' + monthShortNames[date.getMonth() + 1] + ' ' + date.getFullYear(),
-                            'created_by': json[i].created_by.username,
+                            'createdAt': date.getDate() + ' ' + monthShortNames[date.getMonth() + 1] + ' ' + date.getFullYear(),
+                            'createdBy': json[i].createdBy.username,
                             'button': html_btn
                         })
                     }
@@ -266,9 +266,9 @@
             }, {
                 "data": "status"
             }, {
-                "data": "created_at"
+                "data": "createdAt"
             }, {
-                "data": "created_by"
+                "data": "createdBy"
             }, {
                 "data": "button"
             }]
