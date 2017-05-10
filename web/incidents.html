@@ -388,8 +388,8 @@
 
             var data = {
                 "status": "closed",
-                "assignee_id": guardId
             };
+
             $.ajax({
                 type: "PUT",
                 url: "https://aitsgapi.mrteera.com/incidents/" + currentIncident,
@@ -480,8 +480,8 @@
             }, {
                 "data": "button"
             }]
-        }).search('open'|'in progress').draw();
-        //table.columns(2).search('^(?=.*?(open|open)).*?').draw();
+        });
+    table.columns(2).search('^(?=.*?(open|in progress)).*?',true,false,true).draw();
     }
     function OpenList() {
         table.columns(2).search('open').draw();
@@ -494,6 +494,7 @@
     }
     function AllList() {
         table.columns(2).search('').draw();
+
     }
 
     var xhr = new XMLHttpRequest();
