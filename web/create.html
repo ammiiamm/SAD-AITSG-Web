@@ -49,14 +49,14 @@
             //request.open('POST', 'http://private-anon-6f95296b85-aitsg.apiary-mock.com/incidents');
 
             request.setRequestHeader('Content-Type', 'application/json');
-            request.setRequestHeader('Authorization', 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MX0.kHZQ03yhLOPC1c7f6CdItQbT2ljvMQLbucdJVkqwEKs');
+            request.setRequestHeader('Authorization', 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNvbWNoYWlAbXljb21wYW55LmNvbSJ9.9su4Bn9OJw-uL1d1Bmuk2kvBT8sTV9WtsRXksDoURuU');
 
             request.onreadystatechange = function () {
                 if (this.readyState === 4) {
                     console.log('Status:', this.status);
                     console.log('Headers:', this.getAllResponseHeaders());
                     console.log('Body:', this.responseText);
-                    //window.location.href = "incidents.html";
+                    window.location.href = "incidents.html";
 
                 }else{
                   $('#createError').slideDown();
@@ -93,13 +93,14 @@
                 'detail': detail,
                 //'created_by': created_by,
                 //'updated_by': updated_by,
+                'username': "1",
                 'latitude': latitude,
                 'longitude': longtitude,
-                //'image' : image_file,
+                'image' : image_file,
                 //'created_at': created_at
 
             };
-
+            alert(body);
             request.send(JSON.stringify(body));
 
         }
