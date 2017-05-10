@@ -31,15 +31,13 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-	<script src="assets/js/sessionCheck.js"></script>
+     <script src="assets/js/sessionCheck.js"></script>
 
     <script type="text/javascript">
         //initial
         var latMap = 14.080627;
         var lngMap = 100.6103773;
         function sendData() {
-
-
 
             var request = new XMLHttpRequest();
 
@@ -48,32 +46,37 @@
 
             //Mockup Server
             //request.open('POST', 'http://private-anon-6f95296b85-aitsg.apiary-mock.com/incidents');
-
-            request.setRequestHeader('Content-Type', 'application/json');
+            var file = document.getElementById('image_file').files[0];
+            if (!file) {
+                request.setRequestHeader('Content-Type', 'application/json');
+            } else {
+//                request.setRequestHeader('Content-Type', 'multipart/form-data');
+            }
             request.setRequestHeader('Authorization', 'JWT '+sessionStorage.access_token);
+
 
             request.onreadystatechange = function () {
                 if (this.readyState === 4) {
-                    console.log('Status:', this.status);
-                    console.log('Headers:', this.getAllResponseHeaders());
-                    console.log('Body:', this.responseText);
+                    console.log('Status:', request.status);
+                    console.log('Headers:', request.getAllResponseHeaders());
+                    console.log('Body:', request.responseText);
                     window.location.href = "incidents.html";
 
                 }else{
-                  $('#createError').slideDown();
+                    $('#createError').slideDown();
                 }
             };
 
             var title = document.getElementById('title').value;
-                if (title == "") {
-                    alert("Please fill in Title");
-                    return false;
-                }
+            if (title == "") {
+                alert("Please fill in Title");
+                return false;
+            }
             var detail = document.getElementById('detail').value;
-                if (detail == "") {
-                    alert("Please fill in Detail");
-                    return false;
-                }
+            if (detail == "") {
+                alert("Please fill in Detail");
+                return false;
+            }
 
             if (typeof(latMap) == "undefined"){
                 var latitude = 14.080627;
@@ -83,32 +86,29 @@
                 var longtitude = lngMap;
             }
 
+            if (file) {
+                var formData = new FormData();
+                formData.append("image", file);
+                formData.append("title", title);
+                formData.append("detail", detail);
+                formData.append("latitude", latitude);
+                formData.append("longitude", longtitude);
+                request.send(formData);
 
-            var created_at = new Date();
-//            var image_file = document.getElementById('image_file').addEventListener('change', function(){
-//                var file = this.files[0];
-//                // This code is only for demo ...
-//                console.log("name : " + file.name);
-//                console.log("size : " + file.size);
-//                console.log("type : " + file.type);
-//                console.log("date : " + file.lastModified);
-//            }, false);
-//            alert(image_file + ", " + created_at);
-
-            var body = {
-                'title': title,
-                'detail': detail,
-                //'created_by': created_by,
-                //'updated_by': updated_by,
-                //'username': "1",
-                'latitude': latitude,
-                'longitude': longtitude
-                //'image' : image_file,
-                //'created_at': created_at
-
-            };
-
-            request.send(JSON.stringify(body));
+            } else {
+                var body = {
+                    'title': title,
+                    'detail': detail,
+                    //'created_by': created_by,
+                    //'updated_by': updated_by,
+                    //'username': "1",
+                    'latitude': latitude,
+                    'longitude': longtitude
+                    //'image' : image_file,
+                    //'created_at': created_at
+                };
+                request.send(JSON.stringify(body));
+            }
 
         }
 
@@ -152,7 +152,7 @@
 </nav>
 
 <div class="alert alert-error alert-dismissible" role="alert" id="createError" style="display:none;">
-  <strong>Error!</strong> Something wrong on creating new incident.
+    <strong>Error!</strong> Something wrong on creating new incident.
 </div>
 <!-- Main jumbotron for a primary marketing message or call to action -->
 
@@ -176,10 +176,10 @@
                     <label for="lb_detail">Detail:</label>
                     <textarea class="form-control" rows="5" id="detail"></textarea>
                 </div>
-                <!--<br>
+                <br>
                 <div><label for="lb_image_file">Please select image file: </label></div>
-                <div><input type="file" name="image_file" id="image_file" onchange="fileSelected();" /></div>
-                -->
+                <div><input type="file" name="image_file" id="image_file"  /></div>
+
                 <br>
                 <div class="form-group">
                     <label for="lb_location">Location:</label>
@@ -251,46 +251,7 @@
             });
         }
     }
-    function fileSelected() {
-        // hide different warnings
-        document.getElementById('upload_response').style.display = 'none';
-        document.getElementById('error').style.display = 'none';
-        document.getElementById('error2').style.display = 'none';
-        document.getElementById('abort').style.display = 'none';
-        document.getElementById('warnsize').style.display = 'none';
-        // get selected file element
-        var oFile = document.getElementById('image_file').files[0];
-        // filter for image files
-        var rFilter = /^(image\/bmp|image\/gif|image\/jpeg|image\/png|image\/tiff)$/i;
-        if (! rFilter.test(oFile.type)) {
-        document.getElementById('error').style.display = 'block';
-        return;
-        }
-        // little test for filesize
-        //if (oFile.size > iMaxFilesize) {
-        //document.getElementById('warnsize').style.display = 'block';
-        //return;
-        //}
-        // get preview element
-        var oImage = document.getElementById('preview');
-        // prepare HTML5 FileReader
-        var oReader = new FileReader();
-        oReader.onload = function(e){
-        // e.target.result contains the DataURL which we will use as a source of the image
-        oImage.src = e.target.result;
-        oImage.onload = function () { // binding onload event
-        // we are going to display some custom image information here
-        sResultFileSize = bytesToSize(oFile.size);
-        document.getElementById('fileinfo').style.display = 'block';
-        document.getElementById('filename').innerHTML = 'Name: ' + oFile.name;
-        document.getElementById('filesize').innerHTML = 'Size: ' + sResultFileSize;
-        document.getElementById('filetype').innerHTML = 'Type: ' + oFile.type;
-        document.getElementById('filedim').innerHTML = 'Dimension: ' + oImage.naturalWidth + ' x ' + oImage.naturalHeight;
-        };
-        };
-        // read selected file as DataURL
-        oReader.readAsDataURL(oFile);
-    }
+
     // function redirect() {
     //             window.location.href = "incidents.html";
     // }
