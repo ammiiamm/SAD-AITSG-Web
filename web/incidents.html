@@ -65,7 +65,8 @@
                 <li><a href="create.html">New Incident</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a class="navbar-brand" href="#">LOG OUT</a></li>
+				<li id="currentUser"></li>
+                <li><a class="navbar-brand" href="index.html">LOG OUT</a></li>
             </ul>
 
         </div>
@@ -187,6 +188,7 @@
                         <td><label>Assign to:</label></td>
                         <td>
                             <select id="guard" class="form-control">
+                                <option value="" selected disabled>Please select</option>
                             </select>
                         </td>
                     </tr>
@@ -206,7 +208,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="assignSecurityGuard()" data-dismiss="modal">Save changes</button>
+                <button type="button" class="btn btn-primary" onclick="assignSecurityGuard()">Save changes</button>
             </div>
         </div>
     </div>
@@ -230,31 +232,36 @@
     var map;
     var latitude = 14.080627; //default
     var longitude = 100.6103773; //default
-	var currentIncident;
-	
-	function assignSecurityGuard()
-	{
-		var guardId = $("#guard").val();
-		var data = {
-				"status":"in progress",
-				"assignee_id":guardId				
-			};
-        $.ajax({
+    var currentIncident;
+
+    function assignSecurityGuard() {
+        var guardId = $("#guard").val();
+        if (guardId != null) {
+            var data = {
+                "status": "in progress",
+                "assignee_id": guardId
+            };
+            $.ajax({
                 type: "PUT",
-                url: "hhttps://aitsgapi.mrteera.com/incidents/" + currentIncident,
+                url: "https://https://aitsgapi.mrteera.com/incidents/" + currentIncident,
                 data: data,
-                dataType: 'json',   
-				beforeSend: function (xhr) {
-					/* Authorization header */
-					xhr.setRequestHeader("Authorization",'JWT '+sessionStorage.access_token);			
-				},
-                success: function(result) {
+                dataType: 'json',
+                beforeSend: function (xhr) {
+                    /* Authorization header */
+                    xhr.setRequestHeader("Authorization", 'JWT ' + sessionStorage.access_token);
+                },
+                success: function (result) {
                     console.log(result);
-					table.ajax.url( 'https://aitsgapi.mrteera.com/incidents' ).load();
+                    $('#myModal').modal('hide');
+                    table.ajax.url('https://aitsgapi.mrteera.com/incidents').load();
                 }
-         });		
-		
-	}
+            });
+        }
+        else {
+            alert("Please Select Assignee");
+        }
+
+    }
 
     function initMapView() {
         var incident_location = {lat: latitude, lng: longitude};
@@ -312,18 +319,18 @@
         });
     }
 
-//    $('#myModal').on('shown.bs.modal', function () {
-//        initMap();
-//    });
+    //    $('#myModal').on('shown.bs.modal', function () {
+    //        initMap();
+    //    });
 
     function viewIncident(id) {
         var request = new XMLHttpRequest();
-        request.open('GET', 'https://aitsgapi.mrteera.com/incidents/'+id);
-        request.setRequestHeader('Authorization', 'JWT '+sessionStorage.access_token);
+        request.open('GET', 'https://aitsgapi.mrteera.com/incidents/' + id);
+        request.setRequestHeader('Authorization', 'JWT ' + sessionStorage.access_token);
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
                 var data = JSON.parse(request.responseText);
-                if (data.assignee == null){
+                if (data.assignee == null) {
                     var assigning = '';
                 }
                 else {
@@ -334,7 +341,7 @@
                 $('#myModalView .modal-body #view_createBy').text(data.createdBy.username);
                 $('#myModalView .modal-body #assignee').text(assigning);
                 $('#myModalView .modal-body #view_detail').text(data.detail);
-                $('#myModalView .modal-body #view_picture').attr("src",data.image_url);
+                $('#myModalView .modal-body #view_picture').attr("src", data.image_url);
                 latitude = parseFloat(data.latitude);
                 longitude = parseFloat(data.longitude);
                 initMapView()
@@ -344,12 +351,12 @@
     }
 
     function eachIncident(id) {
-		currentIncident = id;
+        currentIncident = id;
         var request = new XMLHttpRequest();
 
-        request.open('GET', 'https://aitsgapi.mrteera.com/incidents/'+id);
+        request.open('GET', 'https://aitsgapi.mrteera.com/incidents/' + id);
 
-        request.setRequestHeader('Authorization', 'JWT '+sessionStorage.access_token);
+        request.setRequestHeader('Authorization', 'JWT ' + sessionStorage.access_token);
 
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
@@ -361,7 +368,7 @@
                 $('#myModal .modal-body #incident_title').text(data.title);
                 $('#myModal .modal-body #createBy').text(data.createdBy.username);
                 $('#myModal .modal-body #detail').text(data.detail);
-                $('#myModal .modal-body #picture').attr("src",data.image_url);
+                $('#myModal .modal-body #picture').attr("src", data.image_url);
                 latitude = parseFloat(data.latitude);
                 longitude = parseFloat(data.longitude);
                 initMap();
@@ -371,43 +378,42 @@
     }
     var table;
     $(document).ready(function () {
-       
-		loadIncidents();
+		$('#currentUser').html(sessionStorage.currentUser);
+        loadIncidents();
 
-    });	
-	function loadIncidents()
-	{
-		 var monthShortNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-		$('#myTable').html("");
-		$('#myTable').html('<thead>'+
-            '<tr class="header">'+
-                '<th>No.</th>'+
-                '<th>Incident</th>'+
-                '<th>Status</th>'+
-                '<th>Created at</th>'+
-                '<th>Created by</th>'+
-                '<th>Assigned to</th>'+
-                '<th>Action</th>'+
+    });
+    function loadIncidents() {
+        var monthShortNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        $('#myTable').html("");
+        $('#myTable').html('<thead>' +
+            '<tr class="header">' +
+            '<th>No.</th>' +
+            '<th>Incident</th>' +
+            '<th>Status</th>' +
+            '<th>Created at</th>' +
+            '<th>Created by</th>' +
+            '<th>Assigned to</th>' +
+            '<th>Action</th>' +
             '</tr>');
-		 table = $('#myTable').DataTable({
+        table = $('#myTable').DataTable({
             "processing": true,
             "ajax": {
                 "url": "https://aitsgapi.mrteera.com/incidents",
                 'beforeSend': function (request) {
-                    request.setRequestHeader("Authorization", 'JWT '+sessionStorage.access_token);
+                    request.setRequestHeader("Authorization", 'JWT ' + sessionStorage.access_token);
                 },
                 "dataSrc": function (json) {
                     var return_data = new Array();
                     for (var i = 0; i < json.length; i++) {
                         var date = new Date(json[i].createdAt);
-                        if (json[i].status == 'open') {
-                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalView" onclick="viewIncident('+ json[i].id + ')"><i class="fa fa-eye" aria-hidden="true"></i></button> <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" onclick="eachIncident('+ json[i].id + ')"><i class="fa fa-pencil" aria-hidden="true"></i></button>'
+                        if (json[i].status == 'closed') {
+                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalView" onclick="viewIncident(' + json[i].id + ')"><i class="fa fa-eye" aria-hidden="true"></i></button> <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" disabled><i class="fa fa-pencil" aria-hidden="true"></i></button>'
                         }
                         else {
-                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalView" onclick="viewIncident('+ json[i].id + ')"><i class="fa fa-eye" aria-hidden="true"></i></button> <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" disabled><i class="fa fa-pencil" aria-hidden="true"></i>/button>'
+                            var html_btn = '<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModalView" onclick="viewIncident(' + json[i].id + ')"><i class="fa fa-eye" aria-hidden="true"></i></button> <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" onclick="eachIncident(' + json[i].id + ')"><i class="fa fa-pencil" aria-hidden="true"></i></button>'
                         }
 
-                        if (json[i].assignee == null){
+                        if (json[i].assignee == null) {
                             var assignee = '';
                         }
                         else {
@@ -442,7 +448,7 @@
                 "data": "button"
             }]
         });
-	}
+    }
     function OpenList() {
         table.columns(2).search('open').draw();
     }
@@ -458,12 +464,12 @@
 
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'https://aitsgapi.mrteera.com/guards');
-    xhr.setRequestHeader('Authorization', 'JWT '+sessionStorage.access_token);
+    xhr.setRequestHeader('Authorization', 'JWT ' + sessionStorage.access_token);
     xhr.onreadystatechange = function () {
         if (this.readyState === 4) {
             var data = JSON.parse(xhr.responseText);
-            for (var i=0;i<data.length;i++){             
-				$('#guard').append($('<option>').text(data[i].name+'('+data[i].username+')').attr('value', data[i].id));
+            for (var i = 0; i < data.length; i++) {
+                $('#guard').append($('<option>').text(data[i].name + '(' + data[i].username + ')').attr('value', data[i].id));
             }
         }
     };
