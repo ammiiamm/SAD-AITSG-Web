@@ -1,5 +1,6 @@
   // [START get_messaging_object]
   // Retrieve Firebase Messaging object.
+console.log("sessionStorage.status: "+sessionStorage.status);
  const messaging = firebase.messaging();
   // [END get_messaging_object]
 
@@ -38,9 +39,11 @@
 	  console.log(payload.data.status);
 	  if(payload.data.status == "authenticated")
 	  {  	
-		sessionStorage.status = true;
+		sessionStorage.status = 1;
 	   	location.href="incidents.html";
 	  }
+	  else
+		 sessionStorage.status = 0;
    
   });
 
