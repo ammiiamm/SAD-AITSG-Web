@@ -1,7 +1,8 @@
   // [START get_messaging_object]
   // Retrieve Firebase Messaging object.
 console.log("sessionStorage.status: "+sessionStorage.status);
- const messaging = firebase.messaging();
+const messaging = firebase.messaging();
+
   // [END get_messaging_object]
 
   // IDs of divs that display Instance ID token UI or request permission UI.
@@ -65,6 +66,8 @@ console.log("sessionStorage.status: "+sessionStorage.status);
                   // Show permission request.
                   console.log('No Instance ID token available. Request permission to generate one.');
                   setTokenSentToServer(false);
+				  requestPermission()
+				  
               }
           })
           .catch(function(err) {
@@ -94,7 +97,7 @@ console.log("sessionStorage.status: "+sessionStorage.status);
   function isTokenSentToServer() {
       return window.localStorage.getItem('sentToServer') == 1;
   }
-
+sessionStorage.status == 0
   function setTokenSentToServer(sent) {
       window.localStorage.setItem('sentToServer', sent ? 1 : 0);
   }

@@ -22,12 +22,18 @@
             messagingSenderId: "189984423113"
         };
         firebase.initializeApp(config);
+		var referrer =  document.referrer;
+		if(referrer!='')
+		{
+			sessionStorage.status = 0;
+		}
+
     </script>
     <script src="assets/js/app.js"></script>
 </head>
 
 <body>
-	<div class="" onclick="requestPermission()" style="padding:20px">Request Permission</div>
+	<!--div class="" onclick="requestPermission()" style="padding:20px">Request Permission</div-->
     <div id="wrapper">
 	
 	
@@ -45,7 +51,6 @@
             </div>
             <div class="footer">
                 <input type="button" id="logins" value="Login" class="button" />
-                <input type="submit" name="submit" value="Register" class="register" />
             </div>
         </form>
     </div>
@@ -57,6 +62,7 @@
             var token = myToken;//$("#token").val();
             var username = $("#userNane").val();
             var password = $("#passWord").val();
+			sessionStorage.currentUser = username;
 			var data={
 				"username":username,
 				"password":password,
