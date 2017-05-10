@@ -35,13 +35,14 @@
 
     <script type="text/javascript">
         //initial
-        //alert(mytoken);
         var latMap = 14.080627;
         var lngMap = 100.6103773;
         function sendData() {
 
+
+
             var request = new XMLHttpRequest();
-            //alert (sessionStorage.access_token);
+
             //Production
             request.open('POST', 'https://aitsgapi.mrteera.com/incidents');
 
@@ -73,6 +74,7 @@
                     alert("Please fill in Detail");
                     return false;
                 }
+
             if (typeof(latMap) == "undefined"){
                 var latitude = 14.080627;
                 var longtitude = 100.6103773;
@@ -81,18 +83,17 @@
                 var longtitude = lngMap;
             }
 
-            //var created_by = "1";
-            //var updated_by = created_by;
+
             var created_at = new Date();
-            var image_file = document.getElementById('image_file').addEventListener('change', function(){
-                var file = this.files[0];
-                // This code is only for demo ...
-                console.log("name : " + file.name);
-                console.log("size : " + file.size);
-                console.log("type : " + file.type);
-                console.log("date : " + file.lastModified);
-            }, false);
-            //alert(image_file + ", " + created_at);
+//            var image_file = document.getElementById('image_file').addEventListener('change', function(){
+//                var file = this.files[0];
+//                // This code is only for demo ...
+//                console.log("name : " + file.name);
+//                console.log("size : " + file.size);
+//                console.log("type : " + file.type);
+//                console.log("date : " + file.lastModified);
+//            }, false);
+//            alert(image_file + ", " + created_at);
 
             var body = {
                 'title': title,
@@ -101,8 +102,8 @@
                 //'updated_by': updated_by,
                 //'username': "1",
                 'latitude': latitude,
-                'longitude': longtitude,
-                'image' : image_file,
+                'longitude': longtitude
+                //'image' : image_file,
                 //'created_at': created_at
 
             };
@@ -110,6 +111,7 @@
             request.send(JSON.stringify(body));
 
         }
+
 
 
     </script>
@@ -121,7 +123,7 @@
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
-        <div class="navbar-header">
+        <div class="navbar-header collapse navbar-collapse">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
@@ -129,14 +131,26 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Security Guard Portal</a>
+            <a class="navbar-brand" href="incidents.html">AIT Security Guard Manager</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="incidents.html">List all incidents<span class="caret"></span></a>
+                </li>
+                <li><a href="create.html">New Incident</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a class="navbar-brand" href="#">LOG OUT</a></li>
+            </ul>
+
         </div>
 
         <!--/.navbar-collapse -->
 
     </div>
-
 </nav>
+
 <div class="alert alert-error alert-dismissible" role="alert" id="createError" style="display:none;">
   <strong>Error!</strong> Something wrong on creating new incident.
 </div>
@@ -162,9 +176,10 @@
                     <label for="lb_detail">Detail:</label>
                     <textarea class="form-control" rows="5" id="detail"></textarea>
                 </div>
-                <br>
+                <!--<br>
                 <div><label for="lb_image_file">Please select image file: </label></div>
                 <div><input type="file" name="image_file" id="image_file" onchange="fileSelected();" /></div>
+                -->
                 <br>
                 <div class="form-group">
                     <label for="lb_location">Location:</label>
@@ -252,10 +267,10 @@
         return;
         }
         // little test for filesize
-        if (oFile.size > iMaxFilesize) {
-        document.getElementById('warnsize').style.display = 'block';
-        return;
-        }
+        //if (oFile.size > iMaxFilesize) {
+        //document.getElementById('warnsize').style.display = 'block';
+        //return;
+        //}
         // get preview element
         var oImage = document.getElementById('preview');
         // prepare HTML5 FileReader
